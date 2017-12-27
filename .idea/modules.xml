@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PushiImageBySockteClent.iml" filepath="$PROJECT_DIR$/PushiImageBySockteClent.iml" />
+      <module fileurl="file://E:\workspace\androidStudio\PushiImageBySockteClent\PushiImageBySockteClent.iml" filepath="E:\workspace\androidStudio\PushiImageBySockteClent\PushiImageBySockteClent.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://E:\workspace\androidStudio\PushiImageBySockteClent\app\app.iml" filepath="E:\workspace\androidStudio\PushiImageBySockteClent\app\app.iml" />
     </modules>
   </component>
 </project>

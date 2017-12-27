@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name=".ScreenCaptureApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
@@ -27,11 +26,6 @@
         <service
             android:name=".FloatWindowsService" android:exported="false"/>
 
-        <activity
-            android:name=".PreviewPictureActivity"
-            android:windowSoftInputMode="stateUnspecified|adjustPan">
-
-        </activity>
 
     </application>
 

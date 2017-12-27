@@ -1,4 +1,4 @@
-package com.action.clent.pushiimagebysockteclent;
+package com.action.clent.pushiimagebysockteclent.uitls;
 
 import android.content.Context;
 import android.os.Environment;

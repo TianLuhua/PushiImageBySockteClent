@@ -30,6 +30,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.action.clent.pushiimagebysockteclent.uitls.FileUtil;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -39,8 +41,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by branch on 2016-5-25.
@@ -213,7 +213,7 @@ public class FloatWindowsService extends Service {
         handler1.postDelayed(new Runnable() {
             public void run() {
                 //capture the screen
-//                startCapture();
+                startCapture();
 
             }
         }, 30);
@@ -222,13 +222,12 @@ public class FloatWindowsService extends Service {
 
     private void createImageReader() {
 
-        mImageReader = ImageReader.newInstance(mScreenWidth, mScreenHeight, PixelFormat.RGBA_8888, 1000/40);
-        mImageReader.setOnImageAvailableListener(imageAvailableListener,null);
+        mImageReader = ImageReader.newInstance(mScreenWidth, mScreenHeight, PixelFormat.RGBA_8888, 1);
+//        mImageReader.setOnImageAvailableListener(imageAvailableListener,null);
 
     }
 
-    private ImageReader.OnImageAvailableListener imageAvailableListener = new ImageReader.OnImageAvailableListener()
-    {
+    private ImageReader.OnImageAvailableListener imageAvailableListener = new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
             Image img = reader.acquireNextImage();
@@ -272,17 +271,17 @@ public class FloatWindowsService extends Service {
                 mImageReader.getSurface(), null, null);
     }
 
-//    private void startCapture() {
-//
-//        Image image = mImageReader.acquireLatestImage();
-//
-//        if (image == null) {
-//            startScreenShot();
-//        } else {
-//            SaveTask mSaveTask = new SaveTask();
-//            AsyncTaskCompat.executeParallel(mSaveTask, image);
-//        }
-//    }
+    private void startCapture() {
+
+        Image image = mImageReader.acquireLatestImage();
+
+        if (image == null) {
+            startScreenShot();
+        } else {
+            SaveTask mSaveTask = new SaveTask();
+            AsyncTaskCompat.executeParallel(mSaveTask, image);
+        }
+    }
 
 
     public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
@@ -301,6 +300,7 @@ public class FloatWindowsService extends Service {
             int height = image.getHeight();
             final Image.Plane[] planes = image.getPlanes();
             final ByteBuffer buffer = planes[0].getBuffer();
+
             //每个像素的间距
             int pixelStride = planes[0].getPixelStride();
             //总的间距
@@ -311,48 +311,47 @@ public class FloatWindowsService extends Service {
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
             Log.e("tlh", "width--->" + width + "\n height--->" + height);
             image.close();
-            File fileImage = null;
-            if (bitmap != null) {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                //读取图片到ByteArrayOutputStream
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                byte[] bytes = baos.toByteArray();
-                sendBitmap(bytes);
+            //  File fileImage = null;
+            //   if (bitmap != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            //读取图片到ByteArrayOutputStream
+            bitmap.compress(Bitmap.CompressFormat.PNG, 20, baos);
+            byte[] bytes = baos.toByteArray();
+            sendBitmap(bytes);
 
-                try {
-                    fileImage = new File(FileUtil.getScreenShotsName(getApplicationContext()));
-                    if (!fileImage.exists()) {
-                        fileImage.createNewFile();
-                    }
-                    FileOutputStream out = new FileOutputStream(fileImage);
-                    if (out != null) {
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-                        out.flush();
-                        out.close();
-                        Intent media = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                        Uri contentUri = Uri.fromFile(fileImage);
-                        media.setData(contentUri);
-                        sendBroadcast(media);
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    fileImage = null;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    fileImage = null;
-                }
-            }
+//                try {
+//                    fileImage = new File(FileUtil.getScreenShotsName(getApplicationContext()));
+//                    if (!fileImage.exists()) {
+//                        fileImage.createNewFile();
+//                    }
+//                    FileOutputStream out = new FileOutputStream(fileImage);
+//                    if (out != null) {
+//                        bitmap.compress(Bitmap.CompressFormat.PNG, 20, out);
+//                        out.flush();
+//                        out.close();
+//                        Intent media = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//                        Uri contentUri = Uri.fromFile(fileImage);
+//                        media.setData(contentUri);
+//                        sendBroadcast(media);
+//                    }
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                    fileImage = null;
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                    fileImage = null;
+//                }
+            //    }
 
-            if (fileImage != null) {
-                return bitmap;
-            }
+            //     if (fileImage != null) {
+            //      return bitmap;
+            //   }
             return null;
         }
 
         private void sendBitmap(byte[] buf) {
-
             try {
-                Socket socket = new Socket("192.168.1.102", 40000);
+                Socket socket = new Socket("192.168.0.123", 40000);
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
                 byte[] bytes = new byte[buf.length + 3];
